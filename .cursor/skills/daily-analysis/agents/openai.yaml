@@ -1,0 +1,6 @@
+interface:
+  display_name: "Daily Analysis"
+  short_description: "Institutional US equity research"
+  default_prompt: "Use $Daily-analysis to analyze a US-listed stock with Yahoo Finance"
+policy:
+  allow_implicit_invocation: true
