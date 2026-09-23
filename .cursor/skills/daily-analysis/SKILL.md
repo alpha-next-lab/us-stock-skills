@@ -11,7 +11,7 @@ Use this skill to produce rigorous US equity research, not casual ticker comment
 
 1. Clarify the ticker, listing, horizon, base currency, and output language if ambiguous. Default to Chinese, US-listed common stock/ADR, USD, and a 1-12 month investment horizon.
 2. Gather current data before analyzing: price, market cap, volume, 52-week range, beta, analyst estimates, financial statements, earnings dates, guidance, valuation multiples, institutional ownership, news, and sector benchmarks.
-3. Use `scripts/market_data.py` for a fast Yahoo Finance availability check when local Python is available. Read [references/data-sources.md](references/data-sources.md) for field mapping and fallback rules.
+3. Use `scripts/market_data.py` for a fast Yahoo Finance availability check when local Python is available. Dependencies live in the repository `.venv`. The script switches to that interpreter when the current `python3` cannot import `yfinance`. Read [references/data-sources.md](references/data-sources.md) for field mapping and fallback rules.
 4. Build the analysis using [references/analysis-framework.md](references/analysis-framework.md). Do not skip fundamentals, valuation, catalysts, risks, and scenario analysis.
 5. Format the answer with [references/report-template.md](references/report-template.md) unless the user requests a different format.
 6. Cite web-accessible sources with links.
@@ -36,7 +36,7 @@ Act like an institutional analyst preparing a buy-side memo:
 
 ## Useful Commands
 
-Run from the skill directory or pass the full script path:
+Run from the skill directory, or pass the full script path from the repository root. Either form uses `.venv` automatically when system `python3` does not have `yfinance`:
 
 ```bash
 python3 scripts/market_data.py AAPL --period 1y --json

@@ -7,7 +7,9 @@ import argparse
 import datetime as dt
 import json
 import math
+import os
 import sys
+from pathlib import Path
 from typing import Any
 
 
@@ -63,12 +65,53 @@ def utc_timestamp() -> str:
     return dt.datetime.now(dt.timezone.utc).isoformat(timespec="seconds")
 
 
+def find_venv_python() -> Path | None:
+    relative_paths = (
+        Path(".venv") / "bin" / "python",
+        Path(".venv") / "Scripts" / "python.exe",
+    )
+    for parent in Path(__file__).resolve().parents:
+        for relative in relative_paths:
+            candidate = parent / relative
+            if candidate.is_file():
+                return candidate
+    return None
+
+
+def reexec_into_project_venv() -> None:
+    """Use the repo .venv when the current interpreter has no yfinance."""
+    if os.environ.get("US_STOCK_SKILLS_VENV_REEXEC") == "1":
+        return
+    try:
+        import yfinance  # noqa: F401
+    except ImportError:
+        pass
+    else:
+        return
+
+    candidate = find_venv_python()
+    if candidate is None:
+        return
+    venv_root = candidate.parent.parent
+    try:
+        if Path(sys.prefix).resolve() == venv_root.resolve():
+            return
+    except OSError:
+        return
+
+    os.environ["US_STOCK_SKILLS_VENV_REEXEC"] = "1"
+    script = str(Path(__file__).resolve())
+    os.execv(str(candidate), [str(candidate), script, *sys.argv[1:]])
+
+
 def require_yfinance():
     try:
         import yfinance as yf
     except ImportError as exc:
         raise RuntimeError(
-            "yfinance is not installed. Install dependencies from requirements.txt."
+            "yfinance is not installed for "
+            f"{sys.executable}. From the repository root run: "
+            "python3 -m venv .venv && .venv/bin/python -m pip install -r requirements.txt"
         ) from exc
     return yf
 
@@ -189,6 +232,7 @@ def print_summary(data: dict[str, Any]) -> None:
 
 
 def main(argv: list[str]) -> int:
+    reexec_into_project_venv()
     parser = argparse.ArgumentParser(description="Fetch quick US equity data through yfinance.")
     parser.add_argument("symbol", help="US ticker, for example AAPL or NVDA")
     parser.add_argument("--period", default="1y", help="Chart range, for example 6mo, 1y, 2y, 5y")
