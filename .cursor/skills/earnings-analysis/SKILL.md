@@ -26,7 +26,7 @@ description: 基于雅虎财经数据的美股财报（earnings）分析。自�
    - 关键项：Revenue、EPS（GAAP 与 Non-GAAP/Adjusted）、毛利率、Operating Margin、Free Cash Flow、Cash & Equivalents、下季/全年 Guidance、分析师共识（consensus）。
 3. **可选加速取数**：若本地脚本可用，优先跑一次快速拉取：
    ```bash
-   python3 ~/.codex/skills/wall-street-us-stock-analysis/scripts/market_data.py TICKER --period 1y --json
+   python3 ../daily-analysis/scripts/market_data.py TICKER --period 1y --json
    ```
 4. **逐项分析**：严格按下方 9 个分析项，每项对比「实际 vs 预期 vs 去年同期（YoY）/上季（QoQ）」。
 5. **给出评分**：结尾用固定的「超预期 / 利空」星级卡片总结。
